@@ -24,7 +24,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.roboter = TechmanModbusClient('192.168.99.21')
-        self.roboter.write_dint(9000, [0])
+        self.roboter.write_dint(Kanalbelegung.kanal_programm.value, [0])
         self.AnzahlKlemmen = 6
         self.AnzahlHutschienen = 8
         self.IndexHutschiene = 1
@@ -166,17 +166,17 @@ class MainWindow(QtWidgets.QMainWindow):
     def roboter_starten(self):
         for i in range(1, self.AnzahlHutschienen):
             print("Start")
-            self.kommunikation_roboter(9000, 100, 0.2)
+            self.kommunikation_roboter(Kanalbelegung.kanal_programm.value, 100, 0.2)
             print("Programmwahl: Einlesen")
-            self.kommunikation_roboter(9002, i, 0.2)
+            self.kommunikation_roboter(Kanalbelegung.kanal_hutschiene.value, i, 0.2)
             self.kommunikation_roboter(9004, 1, 0.2)
             print("Schiene wurde ausgewählt")
-            self.kommunikation_roboter(9101, self.liste_alle_hutschienen[i], 0.2)
+            self.kommunikation_roboter(Kanalbelegung.kanal_reihenfolge.value, self.liste_alle_hutschienen[i], 0.2)
             self.kommunikation_roboter(9006, 1, 5)
             if self.roboter.read_dint(9506, 2) == 1:
-                self.kommunikation_roboter(9002, 0, 0.2)
+                self.kommunikation_roboter(Kanalbelegung.kanal_hutschiene.value, 0, 0.2)
                 self.kommunikation_roboter(9004, 0, 0.2)
-                self.kommunikation_roboter(9101, 0, 0.2)
+                self.kommunikation_roboter(Kanalbelegung.kanal_reihenfolge.value, 0, 0.2)
                 self.kommunikation_roboter(9006, 0, 0.2)
                 print("Kanäle wurden resettet")
             else:
@@ -184,14 +184,14 @@ class MainWindow(QtWidgets.QMainWindow):
                 break
             print("Daten wurden übertragen")
 
-        self.kommunikation_roboter(9000, 200, 0.2)
+        self.kommunikation_roboter(Kanalbelegung.kanal_programm.value, 200, 0.2)
         print("Programmwahl: Platzieren")
-        self.kommunikation_roboter(9000, 200, 0.2)
+        self.kommunikation_roboter(Kanalbelegung.kanal_programm.value, 200, 0.2)
         self.waitOfRobo(9508, [1])
         self.ui.label_command.setText("Vorsicht, Roboter beginnt Platzierung")
         self.waitOfRobo(9500, [999])
         self.ui.label_command.setText("Platzierung erfolgreich")
-        self.kommunikation_roboter(9000, 0, 0.2)
+        self.kommunikation_roboter(Kanalbelegung.kanal_programm.value, 0, 0.2)
         self.kommunikation_roboter(9008, 0, 0.2)
 
 
